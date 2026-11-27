@@ -1,0 +1,36 @@
+function plot_basin_corruption_levels_v11_eps(matFile,outDir)
+%PLOT_BASIN_CORRUPTION_LEVELS_V11_EPS We plot the manuscript-aligned basin results.
+% We display the three paired corruption levels nu=0, 0.05, and 0.10.
+S = load(matFile);
+R = S.results;
+s = pub_style_v11();
+if ~exist(outDir,'dir'), mkdir(outDir); end
+
+fig = figure('Units','centimeters', ...
+    'Position',[2 2 s.singleWidthCm s.singleHeightCm], ...
+    'Color','w','MenuBar','figure','ToolBar','figure');
+ax = axes(fig);
+hold(ax,'on');
+settings = {'corrupt_000','corrupt_005','corrupt_010'};
+labels = {'\nu=0','\nu=0.05','\nu=0.10'};
+for a = 1:3
+    B = R.(settings{a});
+    plot(ax,B.radii(:),B.success(:), ...
+        'Color',s.colors(a,:), ...
+        'LineStyle',s.lineStyles{a}, ...
+        'Marker',s.markers{a}, ...
+        'MarkerSize',s.markerSize, ...
+        'LineWidth',s.lineWidth, ...
+        'DisplayName',labels{a});
+end
+xlabel(ax,'\eta_0 = e_{rel}(x^{(0)})', ...
+    'Interpreter','tex','FontName',s.font,'FontSize',s.labelSize);
+ylabel(ax,'P_{suc}', ...
+    'Interpreter','tex','FontName',s.font,'FontSize',s.labelSize);
+style_axis_v11(ax,s,[0 1.02],[-0.03 1.03],false);
+yticks(ax,0:0.2:1);
+lg = legend(ax,'Location','northoutside','Orientation','horizontal', ...
+    'NumColumns',3,'Box','off','Interpreter','tex');
+set(lg,'FontName',s.font,'FontSize',s.legendSize);
+export_eps_v11(fig,fullfile(outDir,'basin_corruption_levels_v11.eps'));
+end
